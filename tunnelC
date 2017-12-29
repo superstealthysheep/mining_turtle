@@ -1,0 +1,245 @@
+--Created by superstealthysheep
+--based off work by Justinjah91. Source: http://www.computercraft.info/forums2/index.php?/topic/22526-safetunnel-a-tunneling-program-that-protects-you/
+
+args = {...}
+
+blacklist = {
+["No block to inspect"] = true,
+["minecraft:gravel"] = true,
+["minecraft:sand"] = true,
+["minecraft:water"] = true,
+["minecraft:flowing_water"] = true,
+["minecraft:lava"] = true,
+["minecraft:flowing_lava"] = true,
+["minecraft:fire"] = true,
+["Buildcraft:Energy:blockOil"] = true
+}
+
+function inventoryFull() 
+	return turtle.getItemCount(15) > 0
+end
+
+function goHome()
+	turtle.turnLeft()
+	turtle.forward()
+	turtle.turnLeft()
+	while not turtle.detect() do
+		refuel()
+		turtle.forward()
+	end
+end
+
+function emptyItems()
+	--empty items
+	for i=3, 15 do
+		turtle.select(i)
+		turtle.drop()
+	end
+	
+	--replenish fuel
+	turtle.turnRight()
+	turtle.select(2)
+	turtle.drop()
+	turtle.suck()
+end
+
+function goToFace() 
+--go back to end of tunnel
+	turtle.turnRight()
+	while not turtle.detect() do
+		refuel()
+		turtle.forward()
+	end
+	turtle.turnRight()
+	turtle.forward()
+	turtle.turnLeft()
+end
+
+function refuel()
+	if turtle.getFuelLevel() < 50 then
+		turtle.select(2)
+		turtle.refuel(1)
+	end
+end
+
+function fuelLow()
+	return turtle.getItemCount(2) < 10
+end
+
+function compareForward()
+	x, y = turtle.inspect()
+	return not blacklist[y]
+end
+
+function compareUp()
+	x, y = turtle.inspectUp()
+	return not blacklist[y]
+end
+
+function compareDown()
+	x, y = turtle.inspectDown()
+	return not blacklist[y]
+end
+
+function tup()
+	while turtle.up() == false  do
+		turtle.digUp()
+		turtle.attackUp()
+	end
+end
+
+function tdn()
+	while turtle.down() == false do
+		turtle.digDown()
+		turtle.attackDown()
+	end
+end
+
+function trt()
+	turtle.turnRight()
+	while turtle.forward() == false do
+		turtle.dig()
+		turtle.attack()
+	end
+end
+
+function tlt()
+	turtle.turnLeft()
+	while turtle.forward() == false do
+		turtle.dig()
+		turtle.attack()
+	end
+end
+
+function tfd()
+	while turtle.forward() == false do
+		turtle.dig()
+		turtle.attack()
+	end
+end
+
+function tbk()
+	if turtle.back() == false then
+		turtle.turnRight(2)
+		while turtle.forward() == false do
+			turtle.dig()
+			turtle.attack()
+		end
+		turtle.turnRight(2)
+	else
+	end
+end
+
+function cup()
+	if compareUp() == false then
+		turtle.select(1)
+		while turtle.placeUp() == false do
+			turtle.digUp()
+			turtle.attackUp()
+		end
+	else
+	end
+end
+
+function cfd()
+	if compareForward() == false then
+		turtle.select(1)
+		while turtle.place() == false do
+			turtle.dig()
+			turtle.attack()
+		end
+	else
+	end
+end
+
+function cdn()
+	if compareDown() == false then
+		turtle.select(1)
+		while turtle.placeDown() == false do
+			turtle.digDown()
+			turtle.attackDown()
+		end
+	else
+	end
+end	
+
+x = args[1]
+j=0
+
+emptyItems()
+goToFace()
+
+for i=1,x-1 do
+	refuel()
+	if inventoryFull() or fuelLow() then
+		goHome()
+		emptyItems()
+		goToFace()
+	end
+
+	if j%11 == 0 then
+		turtle.turnRight()
+		turtle.turnRight()
+		turtle.select(16)
+		turtle.place()
+		turtle.select(1)
+		turtle.turnRight()
+		turtle.turnRight()
+	elseif (j-5)%11 == 0 then
+		turtle.turnRight()
+		turtle.turnRight()
+		turtle.select(16)
+		turtle.place()
+		turtle.select(1)
+		turtle.turnRight()
+		turtle.turnRight()
+	end
+	j = j+1
+	tfd()
+	cdn()
+	cfd()
+	tup()
+	cfd()
+	tup()
+	cfd()
+	cup()
+	tlt()
+	cfd()
+	cup()
+	turtle.turnRight()
+	cfd()
+	tdn()
+	cfd()
+	turtle.turnLeft()
+	cfd()
+	tdn()
+	cfd()
+	cdn()
+	turtle.turnRight()
+	cfd()
+	turtle.turnRight()
+	tfd()
+	tfd()
+	cfd()
+	cdn()
+	turtle.turnLeft()
+	cfd()
+	tup()
+	cfd()
+	turtle.turnRight()
+	cfd()
+	tup()
+	cfd()
+	cup()
+	turtle.turnLeft()
+	cfd()
+	turtle.turnLeft()
+	tfd()
+	turtle.turnRight()
+	tdn()
+	tdn()
+end	
+
+goHome()
+emptyItems()
+turtle.turnLeft()
